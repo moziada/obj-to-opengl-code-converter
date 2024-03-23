@@ -34,23 +34,35 @@ def convert():
             f_arr.append([[int(i) if len(i) else 0 for i in c.split('/')]
                           for c in tokens[1:]])
     vertices, normals = [], []
+    n_traingles = 0
     for face in f_arr:
-        print("glBegin(GL_POLYGON);")
-        app.setOutput("glBegin(GL_POLYGON);\n")
         vert = [v_arr[tp[0]-1] for tp in face]
-        for v in vert:
-            # print("glVertex3f(", ",".join(
-            #     [str(ve).split(".")[0]+"0" for ve in v]), ");\n")
-            app.setOutput('glVertex3d(')
-            app.setOutput(",".join([str(ve) for ve in v]))
-            app.setOutput(");\n")
+        if len(vert) == 4:  # Face is square
+            t1 = [vert[0], vert[2], vert[1]]
+            t2 = [vert[0], vert[2], vert[3]]
+            for v in t1:
+                app.setOutput(", ".join([str(ve)+"f" for ve in v]))
+                app.setOutput(",\n")
+                app.setOutput("0.5f, 0.4f, 0.7f,")
+                app.setOutput("\n")
+                app.setOutput("\n")
+            for v in t2:
+                app.setOutput(", ".join([str(ve)+"f" for ve in v]))
+                app.setOutput(",\n")
+                app.setOutput("0.5f, 0.4f, 0.7f,")
+                app.setOutput("\n")
+                app.setOutput("\n")
+            n_traingles += 2
+        elif len(vert) == 3:   #Face is triangle
+            for v in vert:
+                app.setOutput(", ".join([str(ve)+"f" for ve in v]))
+                app.setOutput(",\n")
+                app.setOutput("0.5f, 0.4f, 0.7f,")
+                app.setOutput("\n")
+                app.setOutput("\n")
 
-        for tp in face:
-            vertices += v_arr[tp[0]-1]
-            normals += vn_arr[tp[2]-1]
-        print("glEnd();")
-        app.setOutput("glEnd();\n")
-    print(vertices)
+            n_traingles += 1
+    print(f"N Verticies: {n_traingles*3}")
 
     # for index, vert in enumerate(vertices):
     #     print(vert, end="")
